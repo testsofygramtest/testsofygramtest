@@ -1,33 +1,70 @@
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-    import { getDatabase, ref, onValue, update, push, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-    const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
-    let id = "";
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram | السكرتير 📋</title>
+    <style>
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; }
+        .admin-card { background: #121212; border: 2px solid #2ecc71; border-radius: 30px; padding: 20px; max-width: 380px; margin: 15px auto; }
+        .btn-up { background: #2ecc71; color: white; padding: 20px; width: 45%; font-size: 25px; border-radius: 15px; border: none; cursor: pointer; }
+        .btn-down { background: #e74c3c; color: white; padding: 20px; width: 45%; font-size: 25px; border-radius: 15px; border: none; cursor: pointer; }
+        #qrCode img { border: 5px solid white; border-radius: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="loginSection">
+        <div class="admin-card">
+            <h2>دخول السكرتير 🔐</h2>
+            <input type="text" id="user" placeholder="اسم النشاط" style="width:80%; padding:10px; margin:5px;">
+            <input type="password" id="pass" placeholder="الرمز" style="width:80%; padding:10px; margin:5px;">
+            <button onclick="login()" style="width:85%; padding:10px; background:#2ecc71; color:white; border:none; border-radius:10px; margin-top:10px;">دخول</button>
+        </div>
+    </div>
 
-    window.login = async () => {
-        const u=document.getElementById('user').value, p=document.getElementById('pass').value;
-        const snap = await get(ref(db, `users/${u}`));
-        if(snap.exists() && snap.val().password === p) {
-            id=u; document.getElementById('login').style.display='none'; document.getElementById('main').style.display='block';
-            onValue(ref(db, `users/${id}`), s => document.getElementById('cur').innerText = s.val().currentNum);
-            onValue(ref(db, `chats/${id}`), s => {
-                const d = document.getElementById('chat'); d.innerHTML = "";
-                const data = s.val();
-                for(let k in data){ 
-                    const m = data[k];
-                    const senderName = m.sender === 'secretary' ? '<span style="color:#00ff80;">أنا (السكرتير)</span>' : '<span style="color:#fff;">مراجع</span>';
-                    d.innerHTML += `<div style="margin-bottom:8px;"><b>${senderName}:</b> ${m.text}</div>`;
-                }
-                d.scrollTop = d.scrollHeight;
-            });
-        } else { alert("خطأ في بيانات الدخول!"); }
-    };
+    <div id="controlSection" style="display:none;">
+        <div class="admin-card">
+            <h3 id="displayTitle">النشاط</h3>
+            <div style="font-size: 60px; color: #2ecc71; font-weight: bold;" id="curNum">0</div>
+            <button class="btn-up" onclick="changeNum(1)">+</button>
+            <button class="btn-down" onclick="changeNum(-1)">-</button>
+        </div>
 
-    window.upd = v => update(ref(db, `users/${id}`), { currentNum: Math.max(0, parseInt(document.getElementById('cur').innerText)+v) });
-    window.send = () => { 
-        const txt = document.getElementById('reply').value;
-        if(!txt) return;
-        push(ref(db, `chats/${id}`), { sender: 'secretary', text: txt }); 
-        document.getElementById('reply').value=""; 
-    };
-</script>
+        <div class="admin-card">
+            <h4>باركود المشاهدين الخاص بك 📸</h4>
+            <div id="qrCode"></div>
+            <p style="font-size: 12px;">اجعل الزبائن يمسحون هذا الكود</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
+        let currentId = "";
+
+        window.login = async () => {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            const snap = await get(ref(db, `users/${u}`));
+            if(snap.exists() && snap.val().password === p) {
+                currentId = u;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('controlSection').style.display = 'block';
+                document.getElementById('displayTitle').innerText = snap.val().name;
+                
+                // توليد الباركود
+                const viewUrl = `https://testsofygramtest.github.io/testsofygramtest/view.html?id=${u}`;
+                document.getElementById('qrCode').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${viewUrl}">`;
+
+                onValue(ref(db, `users/${u}`), s => document.getElementById('curNum').innerText = s.val().currentNum);
+            } else { alert("خطأ في البيانات!"); }
+        };
+
+        window.changeNum = (v) => {
+            const n = parseInt(document.getElementById('curNum').innerText) + v;
+            update(ref(db, `users/${currentId}`), { currentNum: n < 0 ? 0 : n });
+        };
+    </script>
+</body>
+</html>
