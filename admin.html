@@ -3,67 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | السكرتير 📋</title>
+    <title>Sofygram Admin | إدارة النشاط ⚡</title>
     <style>
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; }
-        .admin-card { background: #121212; border: 2px solid #2ecc71; border-radius: 30px; padding: 20px; max-width: 380px; margin: 15px auto; }
-        .btn-up { background: #2ecc71; color: white; padding: 20px; width: 45%; font-size: 25px; border-radius: 15px; border: none; cursor: pointer; }
-        .btn-down { background: #e74c3c; color: white; padding: 20px; width: 45%; font-size: 25px; border-radius: 15px; border: none; cursor: pointer; }
-        #qrCode img { border: 5px solid white; border-radius: 10px; margin-top: 10px; }
+        :root { --glow: #ffd700; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 15px; margin: 0; }
+        .admin-card { background: #121212; padding: 25px; border-radius: 30px; max-width: 450px; margin: auto; border: 1px solid var(--glow); }
+        .num-display { font-size: 110px; font-weight: bold; color: #fff; margin: 10px 0; }
+        .btn-round { width: 80px; height: 80px; border-radius: 50%; border: none; font-size: 40px; cursor: pointer; color: white; margin: 10px; }
+        .plus { background: #2ecc71; } .minus { background: #e74c3c; }
+        .chat-area { background: rgba(0, 255, 128, 0.05); border: 2px solid #00ff80; border-radius: 20px; padding: 15px; margin-top: 20px; }
+        #chatBox { height: 120px; overflow-y: auto; text-align: right; border-bottom: 1px solid #333; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <div id="loginSection">
-        <div class="admin-card">
-            <h2>دخول السكرتير 🔐</h2>
-            <input type="text" id="user" placeholder="اسم النشاط" style="width:80%; padding:10px; margin:5px;">
-            <input type="password" id="pass" placeholder="الرمز" style="width:80%; padding:10px; margin:5px;">
-            <button onclick="login()" style="width:85%; padding:10px; background:#2ecc71; color:white; border:none; border-radius:10px; margin-top:10px;">دخول</button>
-        </div>
+
+    <div id="loginBox" class="admin-card">
+        <h2>دخول السكرتارية 🔐</h2>
+        <input type="text" id="u" placeholder="اسم المستخدم" style="width:80%; padding:10px; margin:5px;">
+        <input type="password" id="p" placeholder="كلمة المرور" style="width:80%; padding:10px; margin:5px;">
+        <button onclick="login()" style="width:85%; padding:12px; background:var(--glow); border:none; border-radius:10px; font-weight:bold;">دخول</button>
     </div>
 
-    <div id="controlSection" style="display:none;">
-        <div class="admin-card">
-            <h3 id="displayTitle">النشاط</h3>
-            <div style="font-size: 60px; color: #2ecc71; font-weight: bold;" id="curNum">0</div>
-            <button class="btn-up" onclick="changeNum(1)">+</button>
-            <button class="btn-down" onclick="changeNum(-1)">-</button>
+    <div id="controlBox" class="admin-card" style="display:none;">
+        <h2 id="cName" style="color:var(--glow);"></h2>
+        <div class="num-display" id="n">0</div>
+        <div style="display:flex; justify-content:center;">
+            <button class="btn-round minus" onclick="ch(-1)">-</button>
+            <button class="btn-round plus" onclick="ch(1)">+</button>
         </div>
 
-        <div class="admin-card">
-            <h4>باركود المشاهدين الخاص بك 📸</h4>
-            <div id="qrCode"></div>
-            <p style="font-size: 12px;">اجعل الزبائن يمسحون هذا الكود</p>
+        <div class="chat-area">
+            <div id="chatBox"></div>
+            <input type="text" id="reply" placeholder="رد على المراجع..." style="width:70%; padding:8px;">
+            <button onclick="sendMsg()" style="padding:8px; background:#00ff80; border:none; border-radius:8px;">رد</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-        const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
-        let currentId = "";
+        import { getDatabase, ref, get, child, update, onValue, push } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-        window.login = async () => {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
-            const snap = await get(ref(db, `users/${u}`));
-            if(snap.exists() && snap.val().password === p) {
-                currentId = u;
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('controlSection').style.display = 'block';
-                document.getElementById('displayTitle').innerText = snap.val().name;
-                
-                // توليد الباركود
-                const viewUrl = `https://testsofygramtest.github.io/testsofygramtest/view.html?id=${u}`;
-                document.getElementById('qrCode').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${viewUrl}">`;
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
+            authDomain: "sofygramclinic.firebaseapp.com",
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
+            projectId: "sofygramclinic",
+            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let curUser = ""; let curNum = 0;
 
-                onValue(ref(db, `users/${u}`), s => document.getElementById('curNum').innerText = s.val().currentNum);
-            } else { alert("خطأ في البيانات!"); }
+        window.login = () => {
+            const user = document.getElementById('u').value;
+            const pass = document.getElementById('p').value;
+            get(child(ref(db), `users/${user}`)).then((s) => {
+                if(s.exists() && s.val().password == pass) {
+                    curUser = user;
+                    document.getElementById('loginBox').style.display = 'none';
+                    document.getElementById('controlBox').style.display = 'block';
+                    onValue(ref(db, `users/${curUser}`), (snap) => {
+                        document.getElementById('n').innerText = snap.val().currentNum || 0;
+                        document.getElementById('cName').innerText = snap.val().name;
+                        curNum = snap.val().currentNum;
+                    });
+                    // استلام الدردشة
+                    onValue(ref(db, `chats/${curUser}`), s => {
+                        const d = document.getElementById('chatBox'); d.innerHTML = "";
+                        for(let k in s.val()){ const m=s.val()[k]; d.innerHTML += `<div style="color:${m.sender=='secretary'?'#00ff80':'#fff'}"><b>${m.sender=='secretary'?'أنا':'مراجع'}:</b> ${m.text}</div>`; }
+                        d.scrollTop = d.scrollHeight;
+                    });
+                } else alert("بيانات خاطئة!");
+            });
         };
 
-        window.changeNum = (v) => {
-            const n = parseInt(document.getElementById('curNum').innerText) + v;
-            update(ref(db, `users/${currentId}`), { currentNum: n < 0 ? 0 : n });
+        window.ch = (v) => { update(ref(db, `users/${curUser}`), { currentNum: curNum + v }); };
+        window.sendMsg = () => { 
+            push(ref(db, `chats/${curUser}`), { sender: 'secretary', text: document.getElementById('reply').value });
+            document.getElementById('reply').value = "";
         };
     </script>
 </body>
