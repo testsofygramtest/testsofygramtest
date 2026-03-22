@@ -5,63 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sofygram | المشاهد 📺</title>
     <style>
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; }
-        .activity-card { background: #121212; border: 2px solid #ffd700; border-radius: 35px; padding: 20px; max-width: 350px; margin: 20px auto; }
-        .num-circle { width: 150px; height: 150px; border: 5px solid #e74c3c; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 70px; margin: 20px auto; box-shadow: 0 0 20px #e74c3c; color: #e74c3c; font-weight: bold; }
-        .btn-bell { background: #ffd700; border: none; padding: 15px; border-radius: 50%; cursor: pointer; font-size: 24px; box-shadow: 0 0 15px #ffd700; margin-top: 10px; }
-        .chat-glow { background: rgba(0, 255, 128, 0.05); border: 2px solid #00ff80; border-radius: 25px; padding: 15px; margin: 20px; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding-bottom: 50px; }
+        .num-circle { width: 160px; height: 160px; border: 5px solid #e74c3c; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 80px; margin: 30px auto; box-shadow: 0 0 30px #e74c3c; color: white; font-weight: bold; }
+        .chat-glow { background: rgba(0, 255, 128, 0.05); border: 2px solid #00ff80; border-radius: 25px; padding: 15px; max-width: 330px; margin: 20px auto; }
     </style>
 </head>
 <body>
-    <audio id="metroSound" src="https://top4top.io/s_2210u6mzo1.mp3"></audio>
+    <audio id="metro" src="https://top4top.io/s_2210u6mzo1.mp3"></audio>
 
-    <div class="activity-card">
-        <h2 id="actName" style="color:#ffd700;">جاري التحميل...</h2>
-        <p>الرقم الحالي الآن:</p>
-        <div class="num-circle" id="num">0</div>
-        <button class="btn-bell" onclick="playBell()">🔔</button>
-        <p style="font-size: 12px; color: #888;">اضغط الجرس للتنبيه</p>
-    </div>
+    <h2 id="name" style="color:#ffd700; margin-top:30px;">جاري التحميل...</h2>
+    <div class="num-circle" id="n">0</div>
+    <button onclick="document.getElementById('metro').play()" style="background:none; border:none; font-size:30px; cursor:pointer;">🔔</button>
 
     <div class="chat-glow">
-        <div id="chatDisplay" style="height:120px; overflow-y:auto; text-align:right; margin-bottom:10px;"></div>
-        <input type="text" id="msgInput" placeholder="اكتب رسالة للسكرتير..." style="width:70%; padding:10px; border-radius:10px;">
-        <button onclick="sendMsg()" style="padding:10px; background:#00ff80; border:none; border-radius:10px; font-weight:bold;">إرسال</button>
+        <div id="chat" style="height:110px; overflow-y:auto; text-align:right; margin-bottom:10px;"></div>
+        <input type="text" id="msg" placeholder="اسأل السكرتير..." style="width:65%; padding:10px; border-radius:10px;">
+        <button onclick="send()" style="padding:10px; background:#00ff80; border:none; border-radius:10px; font-weight:bold;">إرسال</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
         import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-        const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
+        const db = getDatabase(initializeApp({ databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com" }));
         const id = new URLSearchParams(window.location.search).get('id');
 
         if(id) {
             onValue(ref(db, `users/${id}`), s => {
-                const data = s.val();
-                if(document.getElementById('num').innerText != data.currentNum) playBell();
-                document.getElementById('num').innerText = data.currentNum;
-                document.getElementById('actName').innerText = data.name;
+                if(document.getElementById('n').innerText != s.val().currentNum) document.getElementById('metro').play();
+                document.getElementById('n').innerText = s.val().currentNum;
+                document.getElementById('name').innerText = s.val().name;
             });
-
             onValue(ref(db, `chats/${id}`), s => {
-                const d = document.getElementById('chatDisplay'); d.innerHTML = "";
-                for(let k in s.val()){ 
-                    const m = s.val()[k];
-                    const sender = m.sender === 'patient' ? 'أنا' : 'السكرتير';
-                    const color = m.sender === 'patient' ? '#fff' : '#00ff80';
-                    d.innerHTML += `<div style="color:${color}; margin-bottom:5px;"><b>${sender}:</b> ${m.text}</div>`;
-                }
+                const d = document.getElementById('chat'); d.innerHTML = "";
+                for(let k in s.val()){ const m=s.val()[k]; d.innerHTML += `<div style="color:${m.sender=='patient'?'#fff':'#00ff80'}"><b>${m.sender=='patient'?'أنا':'السكرتير'}:</b> ${m.text}</div>`; }
                 d.scrollTop = d.scrollHeight;
             });
         }
-
-        window.playBell = () => { document.getElementById('metroSound').play(); };
-        window.sendMsg = () => {
-            const txt = document.getElementById('msgInput').value;
-            if(!txt) return;
-            push(ref(db, `chats/${id}`), { sender: 'patient', text: txt });
-            document.getElementById('msgInput').value = "";
-        };
+        window.send = () => { push(ref(db, `chats/${id}`), { sender: 'patient', text: document.getElementById('msg').value }); document.getElementById('msg').value=""; };
     </script>
 </body>
 </html>
