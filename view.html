@@ -1,25 +1,160 @@
-<div id="chatBox" class="chat-glow-box">
-    <div class="chat-title">💬 مراسلة العيادة (استفسار سريع)</div>
-    <div id="chatDisplay" style="height: 100px; overflow-y: auto; text-align: right; margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid #222;">
-        <p style="color: #666;">اكتب رسالتك وسيرد عليك السكرتير هنا...</p>
-    </div>
-    <div style="display: flex; gap: 5px;">
-        <input type="text" id="msgInput" placeholder="اكتب هنا..." style="flex: 1; margin: 0; padding: 10px; font-size: 14px; border-color: #00ff80;">
-        <button onclick="sendMsg()" style="width: auto; padding: 10px 20px; background: #00ff80; color: black; border-radius: 12px; font-weight: bold; cursor: pointer; border: none;">إرسال</button>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram View | شاشة المشاهد الذكية 🌍</title>
+    <style>
+        :root { --glow: #e74c3c; --chat: #00ff80; } 
+        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; padding-bottom: 140px; }
+        
+        .logo img { width: 150px; margin-top: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
 
-<style>
-    .chat-glow-box { 
-        background: rgba(0, 255, 128, 0.05); 
-        border: 2px solid #00ff80; 
-        border-radius: 25px; 
-        padding: 20px; 
-        max-width: 320px; 
-        margin: 20px auto; 
-        box-shadow: 0 0 15px rgba(0, 255, 128, 0.2); 
-        animation: glowPulse 2s infinite;
-    }
-    @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px #00ff8044; } 50% { box-shadow: 0 0 25px #00ff8088; } }
-    .chat-title { color: #00ff80; font-size: 15px; font-weight: bold; margin-bottom: 10px; text-align: right; }
-</style>
+        /* واجهة العرض الأساسية */
+        .number-box { background: #121212; border: 3px solid var(--glow); border-radius: 45px; padding: 35px; max-width: 320px; margin: 20px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; }
+        .big-num { font-size: 115px; font-weight: bold; margin: 5px 0; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        
+        /* نظام الدردشة الفسفوري اللامع */
+        .chat-glow-box { 
+            background: rgba(0, 255, 128, 0.05); 
+            border: 2px solid var(--chat); 
+            border-radius: 30px; 
+            padding: 20px; 
+            max-width: 330px; 
+            margin: 25px auto; 
+            box-shadow: 0 0 15px rgba(0, 255, 128, 0.2); 
+            animation: chatPulse 2.5s infinite;
+        }
+        @keyframes chatPulse { 0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 128, 0.2); } 50% { box-shadow: 0 0 25px rgba(0, 255, 128, 0.5); } }
+        
+        #chatDisplay { height: 120px; overflow-y: auto; text-align: right; margin-bottom: 10px; padding: 10px; font-size: 14px; border-bottom: 1px solid #222; scrollbar-width: none; }
+        #chatDisplay::-webkit-scrollbar { display: none; }
+
+        input[type="text"] { padding: 12px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; width: 70%; outline: none; font-size: 14px; }
+        .btn-send { background: var(--chat); color: black; border: none; padding: 12px 15px; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-send:active { transform: scale(0.9); }
+
+        .card-ui { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 35px; border: 1px solid #1e293b; max-width: 350px; margin: 20px auto; }
+        .btn-gold { background:#ffd700; color:#000; border:none; padding:15px; border-radius:18px; font-weight:bold; width:95%; cursor:pointer; margin-top: 10px; }
+        
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 20px var(--glow); } 50% { box-shadow: 0 0 55px var(--glow); } }
+
+        .res-item { padding:18px; border-bottom:1px solid #222; cursor:pointer; color:#fff; text-align: right; }
+    </style>
+</head>
+<body>
+
+    <div class="logo"><img src="logo.png"></div>
+
+    <div id="searchPage" class="card-ui">
+        <h2 style="color:#ffd700;">🔎 دليل صوفيگرام الذكي</h2>
+        <input type="text" id="searchInput" placeholder="ابحث عن العيادة..." style="width: 85%;">
+        <button onclick="performSearch()" class="btn-gold">بحث الآن</button>
+        <div id="searchResults" style="margin-top:20px;"></div>
+    </div>
+
+    <div id="livePage" style="display:none;">
+        <h2 id="clinicName" style="color:#ffd700; margin-bottom:5px;"></h2>
+        <div id="statusTag" style="display:inline-block; padding:8px 30px; border-radius:50px; font-size:15px; border:2px solid var(--glow); color:var(--glow); margin-bottom:10px;">--</div>
+        
+        <div class="number-box">
+            <p style="color:#888; font-size:14px; margin:0;">الرقم الحالي الآن</p>
+            <div class="big-num" id="liveNumber">0</div>
+        </div>
+
+        <div class="chat-glow-box">
+            <div style="color:var(--chat); font-weight:bold; margin-bottom:10px; text-align: right;">💬 دردشة فورية مع السكرتير</div>
+            <div id="chatDisplay">
+                <p style="color:#555; font-size:12px;">يمكنك كتابة استفسارك هنا...</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="msgInput" placeholder="اكتب رسالتك...">
+                <button class="btn-send" onclick="sendMsg()">إرسال</button>
+            </div>
+        </div>
+        
+        <button class="btn-gold" style="background:rgba(255,255,255,0.05); color:#888;" onclick="location.href='view.html'">🔍 بحث جديد</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue, get, push } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgacmgprp9HYJCcUwVnd3yiKGpoy5k-Q8",
+            authDomain: "testsofygramtest.firebaseapp.com",
+            databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com",
+            projectId: "testsofygramtest",
+            storageBucket: "testsofygramtest.firebasestorage.app",
+            messagingSenderId: "105770464383",
+            appId: "1:105770464383:web:1f1ad1ad2d9cc2bf9ebb4a"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+
+        if(id) { 
+            document.getElementById('searchPage').style.display = 'none';
+            document.getElementById('livePage').style.display = 'block';
+            startTracking(id);
+            listenForChat(id);
+        }
+
+        window.performSearch = async () => {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            const snap = await get(ref(db, 'users'));
+            const data = snap.val();
+            const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
+            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
+                resDiv.innerHTML += `<div class="res-item" onclick="window.location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
+        };
+
+        function startTracking(targetId) {
+            onValue(ref(db, 'users/' + targetId), (snap) => {
+                const info = snap.val(); if(!info) return;
+                document.getElementById('liveNumber').innerText = info.currentNum || 0;
+                document.getElementById('clinicName').innerText = info.name;
+                document.getElementById('statusTag').innerText = info.status || "--";
+                
+                const root = document.documentElement;
+                if(info.status?.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
+                else if(info.status?.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f');
+                else root.style.setProperty('--glow', '#e74c3c');
+            });
+        }
+
+        // --- كود الدردشة ---
+        window.sendMsg = () => {
+            const txt = document.getElementById('msgInput').value;
+            if(!txt || !id) return;
+            push(ref(db, `chats/${id}`), {
+                sender: 'patient',
+                text: txt,
+                time: new Date().toLocaleTimeString()
+            });
+            document.getElementById('msgInput').value = "";
+        };
+
+        function listenForChat(clinicId) {
+            onValue(ref(db, `chats/${clinicId}`), (snap) => {
+                const data = snap.val();
+                const display = document.getElementById('chatDisplay');
+                display.innerHTML = "";
+                for(let k in data) {
+                    const m = data[k];
+                    const align = m.sender === 'patient' ? 'right' : 'left';
+                    const color = m.sender === 'patient' ? '#fff' : '#00ff80';
+                    const name = m.sender === 'patient' ? 'أنا' : 'السكرتير';
+                    display.innerHTML += `<div style="text-align:${align}; margin-bottom:8px; color:${color};">
+                        <small style="font-size:10px; display:block; color:#666;">${m.time}</small>
+                        <b>${name}:</b> ${m.text}
+                    </div>`;
+                }
+                display.scrollTop = display.scrollHeight;
+            });
+        }
+    </script>
+</body>
+</html>
