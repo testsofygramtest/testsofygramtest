@@ -1,67 +1,29 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>Sofygram Master | الملك 👑</title>
-    <style>
-        body { background: #050a14; color: #ffd700; font-family: sans-serif; text-align: center; padding: 20px; }
-        .master-card { background: #121212; border: 2px solid #ffd700; border-radius: 30px; padding: 25px; max-width: 600px; margin: auto; }
-        .user-row { background: #000; border: 1px solid #333; padding: 15px; margin: 10px 0; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-act { background: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; }
-        .btn-stop { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; }
-        input { padding: 12px; border-radius: 12px; border: 1px solid #ffd700; background: #000; color: #fff; margin-bottom: 10px; }
-    </style>
-</head>
-<body>
-    <div id="masterLogin">
-        <div class="master-card">
-            <h2>دخول الماستر 👑</h2>
-            <input type="password" id="masterKey" placeholder="أدخل رمز القفل الملكي">
-            <button onclick="checkMaster()" class="btn-act">فتح اللوحة</button>
-        </div>
-    </div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+    const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
 
-    <div id="masterPanel" style="display:none;">
-        <div class="master-card">
-            <h1>إدارة عيادات صوفيگرام 🌍</h1>
-            <div id="list"></div>
-        </div>
-    </div>
+    // ... كود الدخول (checkMaster) يبقى كما هو ...
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-        const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
-
-        window.checkMaster = () => {
-            if(document.getElementById('masterKey').value === "1234") { // غير الرمز هنا
-                document.getElementById('masterLogin').style.display = 'none';
-                document.getElementById('masterPanel').style.display = 'block';
-                loadUsers();
-            } else { alert("الرمز خطأ يا ملك!"); }
-        };
-
-        function loadUsers() {
-            onValue(ref(db, 'users'), snap => {
-                const list = document.getElementById('list'); list.innerHTML = "";
-                const data = snap.val();
-                for(let id in data) {
-                    const u = data[id];
-                    list.innerHTML += `<div class="user-row">
-                        <div style="text-align:right;">
-                            <b style="color:#fff;">${u.name}</b><br>
-                            <small style="color:#888;">User: ${id}</small>
-                        </div>
-                        <div>
-                            <button class="btn-act" onclick="act('${id}', true)">تفعيل</button>
-                            <button class="btn-stop" onclick="act('${id}', false)">إيقاف</button>
-                        </div>
-                        <span style="color:${u.active ? '#2ecc71' : '#e74c3c'}">${u.active ? 'نشط' : 'متوقف'}</span>
-                    </div>`;
-                }
-            });
-        }
-        window.act = (id, s) => update(ref(db, `users/${id}`), { active: s, status: s ? "مفتوح ✅" : "مغلق ❌" });
-    </script>
-</body>
-</html>
+    function loadUsers() {
+        onValue(ref(db, 'users'), snap => {
+            const list = document.getElementById('list'); list.innerHTML = "";
+            const data = snap.val();
+            for(let id in data) {
+                const u = data[id];
+                list.innerHTML += `<div class="user-row" style="background:#000; border:1px solid #333; padding:15px; margin:10px; border-radius:20px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="text-align:right;">
+                        <b style="color:#ffd700;">${u.name}</b><br>
+                        <small style="color:#888;">User: ${id}</small><br>
+                        <small style="color:#2ecc71;">Pass: ${u.password}</small> </div>
+                    <div>
+                        <button class="btn-act" onclick="act('${id}', true)" style="background:#2ecc71; border:none; padding:10px; color:#fff; border-radius:10px; cursor:pointer;">تفعيل</button>
+                        <button class="btn-stop" onclick="act('${id}', false)" style="background:#e74c3c; border:none; padding:10px; color:#fff; border-radius:10px; cursor:pointer; margin-right:5px;">إيقاف</button>
+                    </div>
+                    <span style="color:${u.active ? '#2ecc71' : '#e74c3c'}">${u.active ? 'نشط' : 'متوقف'}</span>
+                </div>`;
+            }
+        });
+    }
+    window.act = (id, s) => update(ref(db, `users/${id}`), { active: s, status: s ? "مفتوح ✅" : "مغلق ❌" });
+</script>
