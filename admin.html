@@ -3,84 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Admin | إدارة العيادة ⚡</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <title>Sofygram Admin | لوحة السكرتاريا الذكية 📋</title>
     <style>
-        :root { --glow: #ffd700; }
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 15px; margin: 0; }
-        .admin-card { background: #121212; padding: 25px; border-radius: 30px; max-width: 450px; margin: auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.1); }
+        :root { --glow: #2ecc71; --chat: #00ff80; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .admin-card { background: #121212; padding: 25px; border-radius: 30px; max-width: 400px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(46, 204, 113, 0.2); }
         
-        /* شاشة الرقم الكبير */
-        .num-display { font-size: 110px; font-weight: bold; color: #fff; margin: 10px 0; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        
-        /* أزرار التحكم */
-        .btn-round { width: 85px; height: 85px; border-radius: 50%; border: none; font-size: 45px; cursor: pointer; color: white; margin: 10px; transition: 0.3s; }
-        .plus { background: #2ecc71; box-shadow: 0 0 15px #2ecc71; }
-        .minus { background: #e74c3c; box-shadow: 0 0 15px #e74c3c; }
-        .btn-round:active { transform: scale(0.9); }
+        .num-display { font-size: 80px; font-weight: bold; color: var(--glow); text-shadow: 0 0 15px rgba(46, 204, 113, 0.4); margin: 10px 0; }
+        .btn-action { background: var(--glow); color: white; border: none; padding: 20px; width: 45%; border-radius: 20px; font-size: 24px; font-weight: bold; cursor: pointer; margin: 5px; box-shadow: 0 4px 0 #27ae60; }
+        .btn-action:active { transform: translateY(3px); box-shadow: none; }
 
-        /* منطقة الأدوات السفلية (الباركود والتصفير) */
-        .tools-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-        
-        /* قسم الباركود */
-        #qr-area { background: white; padding: 10px; border-radius: 12px; display: inline-block; }
-        .qr-container { text-align: right; width: 45%; }
-        .save-qr { background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; margin-top: 8px; cursor: pointer; width: 100%; }
-
-        /* قسم التصفير */
-        .reset-container { text-align: left; width: 45%; }
-        .btn-reset { background: none; color: #e74c3c; border: 1px solid #e74c3c; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; width: 100%; transition: 0.3s; }
-        .btn-reset:hover { background: #e74c3c; color: white; }
-
-        input, textarea, select { width: 90%; padding: 12px; margin: 8px 0; border-radius: 12px; background: #1e293b; color: white; border: 1px solid #333; text-align: center; }
-        .btn-save { background: var(--glow); color: #000; border: none; padding: 15px; border-radius: 15px; font-weight: bold; width: 95%; cursor: pointer; margin-top: 10px; }
+        /* نظام الدردشة الفسفوري للسكرتير */
+        .admin-chat-box { 
+            background: rgba(0, 255, 128, 0.05); 
+            border: 2px solid var(--chat); 
+            border-radius: 25px; 
+            padding: 15px; 
+            margin-top: 25px; 
+            box-shadow: 0 0 15px rgba(0, 255, 128, 0.1);
+        }
+        #adminChatDisplay { height: 150px; overflow-y: auto; text-align: right; font-size: 13px; border-bottom: 1px solid #333; margin-bottom: 10px; padding: 5px; }
+        .chat-input-group { display: flex; gap: 5px; }
+        .chat-input-group input { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; outline: none; }
+        .btn-reply { background: var(--chat); color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="loginBox" class="admin-card">
-        <img src="logo.png" style="width:140px; margin-bottom:20px;">
-        <h2 style="color:var(--glow);">دخول السكرتارية 🔐</h2>
-        <input type="text" id="u" placeholder="اسم المستخدم">
-        <input type="password" id="p" placeholder="كلمة المرور">
-        <button onclick="login()" class="btn-save">دخول</button>
+        <h2 style="color:var(--glow);">دخول السكرتير 🔐</h2>
+        <input type="text" id="uName" placeholder="اسم المستخدم" style="width:85%; padding:15px; margin-bottom:10px; border-radius:15px; background:#000; color:#fff; border:1px solid #333;">
+        <input type="password" id="uPass" placeholder="كلمة المرور" style="width:85%; padding:15px; margin-bottom:15px; border-radius:15px; background:#000; color:#fff; border:1px solid #333;">
+        <button onclick="login()" style="width:90%; padding:15px; border-radius:15px; background:var(--glow); border:none; font-weight:bold; cursor:pointer;">دخول</button>
     </div>
 
-    <div id="controlBox" class="admin-card" style="display:none;">
-        <h2 id="cName" style="color:var(--glow); margin:0;"></h2>
-        <div class="num-display" id="n">0</div>
-        
-        <div style="display:flex; justify-content:center;">
-            <button class="btn-round minus" onclick="ch(-1)">-</button>
-            <button class="btn-round plus" onclick="ch(1)">+</button>
+    <div id="controlBox" style="display:none;">
+        <div class="admin-card">
+            <h3 id="displayTitle">العيادة</h3>
+            <div class="num-display" id="curNum">0</div>
+            <div style="display:flex; justify-content: center;">
+                <button class="btn-action" onclick="changeNum(1)">+</button>
+                <button class="btn-action" onclick="changeNum(-1)" style="background:#e74c3c; box-shadow: 0 4px 0 #c0392b;">-</button>
+            </div>
+            <button onclick="resetNum()" style="background:none; color:#888; border:none; margin-top:15px; cursor:pointer;">إعادة تصغير الرقم لـ 0</button>
         </div>
 
-        <select id="st">
-            <option value="🟢 مفتوح الآن | Open">🟢 مفتوح الآن</option>
-            <option value="🟡 قريباً | Soon">🟡 قريباً</option>
-            <option value="🔴 مغلق | Closed">🔴 مغلق</option>
-        </select>
-        <textarea id="nt" placeholder="اكتب ملاحظة للمراجعين..."></textarea>
-        <button onclick="upDetails()" class="btn-save">تحديث البيانات 🚀</button>
-
-        <div class="tools-grid">
-            <div class="reset-container">
-                <button onclick="resetNum()" class="btn-reset">🔄 تصفير العداد<br>نهاية الدوام</button>
+        <div class="admin-card admin-chat-box">
+            <div style="color:var(--chat); font-weight:bold; margin-bottom:10px; text-align: right;">💬 رسائل المراجعين الواردة</div>
+            <div id="adminChatDisplay">
+                <p style="color:#444;">لا توجد رسائل حالياً...</p>
             </div>
-
-            <div class="qr-container">
-                <div id="qr-area"></div>
-                <button class="save-qr" onclick="downloadQR()">💾 حفظ الباركود</button>
+            <div class="chat-input-group">
+                <input type="text" id="adminReplyInput" placeholder="رد على المراجع...">
+                <button class="btn-reply" onclick="replyToPatient()">رد</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, get, child, update, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, push, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-        // مفاتيح مختبر صوفيگرام الجديدة
         const firebaseConfig = {
             apiKey: "AIzaSyAgacmgprp9HYJCcUwVnd3yiKGpoy5k-Q8",
             authDomain: "testsofygramtest.firebaseapp.com",
@@ -93,59 +76,64 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let curUser = ""; let curNum = 0;
+        let currentClinicId = "";
 
-        window.login = () => {
-            const user = document.getElementById('u').value.trim();
-            const pass = document.getElementById('p').value.trim();
-            get(child(ref(db), `users/${user}`)).then((s) => {
-                if(s.exists() && s.val().password == pass) {
-                    if(!s.val().active) return alert("الحساب بانتظار التفعيل!");
-                    curUser = user;
-                    document.getElementById('loginBox').style.display = 'none';
-                    document.getElementById('controlBox').style.display = 'block';
-                    
-                    // توليد الباركود فوراً
-                    new QRCode(document.getElementById("qr-area"), {
-                        text: `https://sofygram.com/view.html?id=${curUser}`,
-                        width: 90, height: 90
-                    });
+        window.login = async () => {
+            const user = document.getElementById('uName').value;
+            const pass = document.getElementById('uPass').value;
+            const snap = await get(ref(db, `users/${user}`));
+            if(snap.exists() && snap.val().password === pass) {
+                currentClinicId = user;
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('controlBox').style.display = 'block';
+                document.getElementById('displayTitle').innerText = snap.val().name;
+                loadData();
+                listenToChat();
+            } else { alert("خطأ في البيانات!"); }
+        };
 
-                    onValue(ref(db, `users/${curUser}`), (snap) => {
-                        const d = snap.val(); curNum = d.currentNum || 0;
-                        document.getElementById('n').innerText = curNum;
-                        document.getElementById('cName').innerText = d.name;
-                        document.getElementById('nt').value = d.note || "";
-                        document.getElementById('st').value = d.status || "🟢 مفتوح الآن | Open";
-                    });
-                } else alert("بيانات خاطئة!");
+        function loadData() {
+            onValue(ref(db, `users/${currentClinicId}`), (snap) => {
+                document.getElementById('curNum').innerText = snap.val().currentNum || 0;
             });
+        }
+
+        window.changeNum = (val) => {
+            const el = document.getElementById('curNum');
+            let newNum = parseInt(el.innerText) + val;
+            if(newNum < 0) newNum = 0;
+            update(ref(db, `users/${currentClinicId}`), { currentNum: newNum });
         };
 
-        window.ch = (v) => { 
-            curNum += v; if(curNum < 0) curNum = 0;
-            update(ref(db, `users/${curUser}`), { currentNum: curNum });
-        };
+        window.resetNum = () => { if(confirm("تصفير؟")) update(ref(db, `users/${currentClinicId}`), { currentNum: 0 }); };
 
-        window.upDetails = () => {
-            update(ref(db, `users/${curUser}`), { status: document.getElementById('st').value, note: document.getElementById('nt').value })
-            .then(() => alert("تم التحديث ✅"));
-        };
-
-        window.resetNum = () => {
-            if(confirm("⚠️ هل أنت متأكد من تصفير العداد لبدء دوام جديد؟")) {
-                update(ref(db, `users/${curUser}`), { currentNum: 0 });
-            }
-        };
-
-        // وظيفة حفظ الباركود كصورة
-        window.downloadQR = () => {
-            html2canvas(document.querySelector("#qr-area")).then(canvas => {
-                let link = document.createElement('a');
-                link.download = `Sofygram-QR-${curUser}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
+        // --- نظام دردشة السكرتير ---
+        function listenToChat() {
+            onValue(ref(db, `chats/${currentClinicId}`), (snap) => {
+                const data = snap.val();
+                const display = document.getElementById('adminChatDisplay');
+                display.innerHTML = "";
+                if(!data) { display.innerHTML = "<p style='color:#444;'>لا توجد رسائل...</p>"; return; }
+                
+                for(let k in data) {
+                    const m = data[k];
+                    const color = m.sender === 'patient' ? '#fff' : '#00ff80';
+                    const name = m.sender === 'patient' ? 'مراجع' : 'أنا';
+                    display.innerHTML += `<div style="margin-bottom:8px; color:${color};"><b>${name}:</b> ${m.text}</div>`;
+                }
+                display.scrollTop = display.scrollHeight;
             });
+        }
+
+        window.replyToPatient = () => {
+            const txt = document.getElementById('adminReplyInput').value;
+            if(!txt || !currentClinicId) return;
+            push(ref(db, `chats/${currentClinicId}`), {
+                sender: 'secretary',
+                text: txt,
+                time: new Date().toLocaleTimeString()
+            });
+            document.getElementById('adminReplyInput').value = "";
         };
     </script>
 </body>
