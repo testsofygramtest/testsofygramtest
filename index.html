@@ -1,36 +1,22 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Test | Search</title>
-    <style>
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .card { background: #121212; padding: 30px; border-radius: 30px; border: 1px solid #ffd700; max-width: 400px; margin: auto; box-shadow: 0 0 20px rgba(255,215,0,0.1); }
-        input { width: 85%; padding: 15px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; margin-bottom: 20px; text-align: center; }
-        button { background: #ffd700; color: #000; border: none; padding: 15px 30px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 90%; }
-        .res-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; text-align: right; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h2 style="color:#ffd700;">🔎 دليل البحث (Tset)</h2>
-        <input type="text" id="searchInput" placeholder="اكتب اسم العيادة...">
-        <button onclick="search()">بحث الآن</button>
-        <div id="results" style="margin-top:20px;"></div>
-    </div>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-        const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
-        window.search = async () => {
-            const val = document.getElementById('searchInput').value.toLowerCase();
-            const snap = await get(ref(db, 'users'));
-            const data = snap.val();
-            const resDiv = document.getElementById('results'); resDiv.innerHTML = "";
-            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
-                resDiv.innerHTML += `<div class="res-item" onclick="window.location.href='view.html?id=${key}'">⭐ ${data[key].name}</div>`;
-        };
-    </script>
-</body>
-</html>
+<script type="module">
+    // ... الكود السابق ...
+    window.search = async () => {
+        const val = document.getElementById('searchInput').value.toLowerCase();
+        const snap = await get(ref(db, 'users'));
+        const data = snap.val();
+        const resDiv = document.getElementById('results'); resDiv.innerHTML = "";
+        
+        let count = 0;
+        for(let key in data) {
+            if(data[key].name.toLowerCase().includes(val) && count < 4) { // حصر البحث بأول 4 كأولوية
+                resDiv.innerHTML += `
+                <div class="res-item" onclick="window.location.href='view.html?id=${key}'" 
+                     style="background:#1a1a1a; padding:15px; margin:10px; border-radius:15px; border:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+                    <span>⭐ ${data[key].name}</span>
+                    <span style="color:#ffd700; font-size:12px;">انقر للمشاهدة</span>
+                </div>`;
+                count++;
+            }
+        }
+    };
+</script>
