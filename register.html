@@ -3,97 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>انضم إلى صوفيگرام | التسجيل والاشتراك 👑</title>
+    <title>Sofygram Test | Register</title>
     <style>
         :root { --glow: #ffd700; }
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; }
-        .reg-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 450px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.1); }
-        .logo-container img { width: 140px; filter: drop-shadow(0 0 15px rgba(255,215,0,0.4)); animation: logoPulse 3s infinite; margin-bottom: 15px; }
-        @keyframes logoPulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(255,215,0,0.3)); } 50% { transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(255,215,0,0.6)); } }
-        h2 { color: var(--glow); margin-bottom: 25px; font-weight: bold; }
-        .step-label { display: block; text-align: right; margin: 15px 25px 5px 0; font-size: 14px; color: #888; }
-        input { width: 85%; padding: 15px; margin-bottom: 15px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-size: 18px; outline: none; }
-        input:focus { border-color: var(--glow); box-shadow: 0 0 10px rgba(255,215,0,0.2); }
-        .pay-box { background: rgba(255, 255, 255, 0.03); border: 2px dashed #444; border-radius: 25px; padding: 25px 20px; margin: 20px 0; }
-        .pay-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; background: #000; padding: 15px; border-radius: 18px; border: 1px solid #222; cursor: pointer; transition: 0.3s; }
-        .pay-item:hover { border-color: var(--glow); background: rgba(255,215,0,0.05); }
-        .pay-name { font-weight: bold; color: #fff; font-size: 16px; letter-spacing: 0.5px; }
-        .pay-num { font-family: monospace; font-size: 18px; color: var(--glow); letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
-        .btn-whatsapp { background: #25d366; color: white; border: none; padding: 18px; border-radius: 20px; font-weight: bold; width: 95%; cursor: pointer; font-size: 18px; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); transition: 0.3s; }
-        .btn-whatsapp:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5); }
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #2ecc71; color: white; padding: 10px 20px; border-radius: 10px; display: none; font-size: 14px; z-index: 2000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 10px; }
+        .card { background: #121212; padding: 25px; border-radius: 35px; max-width: 450px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.1); }
+        input { width: 85%; padding: 15px; margin-bottom: 15px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; }
+        .btn-wa { background: #25d366; color: white; border: none; padding: 18px; border-radius: 20px; font-weight: bold; width: 95%; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="reg-card">
-        <div class="logo-container"><img src="logo.png"></div>
-        <h2>إنشاء حساب جديد 👑</h2>
-        <span class="step-label">1. معلومات الحساب الجديد:</span>
-        <input type="text" id="regName" placeholder="اسم العيادة أو النشاط">
-        <input type="text" id="regUser" placeholder="اسم المستخدم (إنجليزي)">
-        <input type="password" id="regPass" placeholder="كلمة المرور">
-        <div class="pay-box">
-            <span style="display:block; color:var(--glow); margin-bottom:15px; font-weight:bold; font-size: 18px;">💳 خيارات الدفع (تفعيل 30 يوم)</span>
-            <div class="pay-item" onclick="copyNum('07800000000')">
-                <span class="pay-name">Zain Cash</span>
-                <span class="pay-num">07800000000</span>
-            </div>
-            <div class="pay-item" onclick="copyNum('0000000000000000')">
-                <span class="pay-name">MasterCard</span>
-                <span class="pay-num">0000...0000</span>
-            </div>
-            <p style="font-size: 12px; color: #bbb;">اضغط على الرقم لنسخه فوراً.. ثم أرسل صورة وصل الحوالة لتفعيل حسابك ✅</p>
+    <div class="card">
+        <h2 style="color:var(--glow);">إنشاء حساب مختبر 👑</h2>
+        <input type="text" id="rName" placeholder="اسم العيادة">
+        <input type="text" id="rUser" placeholder="اسم المستخدم (إنجليزي)">
+        <input type="password" id="rPass" placeholder="كلمة المرور">
+        <div style="margin: 20px 0; border-top: 1px dashed #333; padding-top:10px;">
+            <p style="font-size: 22px; font-weight: bold; color: #ffd700; text-shadow: 0 0 15px rgba(255,215,0,0.6);">👑 المهندس صوفي (Sofygram)</p>
         </div>
-
-        <div style="margin-top: 20px; padding: 15px 0; border-top: 1px dashed #333; margin-bottom: 10px;">
-            <p style="font-size: 14px; color: #888; margin: 5px 0;">تم التطوير والبرمجة بكل فخر بواسطة</p>
-            <p style="font-size: 22px; font-weight: bold; color: #ffd700; margin: 0; text-shadow: 0 0 15px rgba(255,215,0,0.6);">👑 المهندس صوفي (Sofygram)</p>
-        </div>
-
-        <button class="btn-whatsapp" onclick="sendToWhatsapp()">
-            <span>إرسال وصل الحوالة للتفعيل 🟢</span>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:25px;">
-        </button>
-        <p style="margin-top:20px; font-size:11px; color:#444;">Sofygram Global Payment System © 2026</p>
+        <button class="btn-wa" onclick="reg()">تفعيل عبر واتساب 🟢</button>
     </div>
-
-    <div id="toast" class="toast">تم نسخ الرقم ✅</div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAgacmgprp9HYJCcUwVnd3yiKGpoy5k-Q8",
-            authDomain: "testsofygramtest.firebaseapp.com",
-            databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com",
-            projectId: "testsofygramtest",
-            storageBucket: "testsofygramtest.firebasestorage.app",
-            messagingSenderId: "105770464383",
-            appId: "1:105770464383:web:1f1ad1ad2d9cc2bf9ebb4a"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        window.copyNum = (num) => {
-            navigator.clipboard.writeText(num).then(() => {
-                const toast = document.getElementById('toast');
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 2000);
-            });
-        };
-
-        window.sendToWhatsapp = () => {
-            const name = document.getElementById('regName').value;
-            const user = document.getElementById('regUser').value;
-            const pass = document.getElementById('regPass').value;
-            if(!name || !user || !pass) return alert("يرجى إكمال كافة الحقول!");
-            set(ref(db, 'users/' + user), {
-                name: name, password: pass, active: false, currentNum: 0, status: "بانتظار التفعيل ⏳"
-            }).then(() => {
-                const msg = `مرحباً صوفيگرام، أريد تفعيل حسابي الجديد:\nالاسم: ${name}\nالمستخدم: ${user}`;
-                window.location.href = `https://wa.me/9647800000000?text=${encodeURIComponent(msg)}`;
+        const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
+        window.reg = () => {
+            const n=document.getElementById('rName').value, u=document.getElementById('rUser').value, p=document.getElementById('rPass').value;
+            if(!n || !u || !p) return alert("امسح الحقول!");
+            set(ref(db, 'users/' + u), { name: n, password: p, active: false, currentNum: 0, status: "بانتظار التفعيل ⏳" }).then(() => {
+                window.location.href = `https://wa.me/9647807466488?text=تفعيل حساب مختبر: ${n}`;
             });
         };
     </script>
