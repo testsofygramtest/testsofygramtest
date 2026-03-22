@@ -1,30 +1,105 @@
-<div class="master-card" style="margin-top:30px; border-color: #2ecc71;">
-    <h2 style="color:#2ecc71;">📢 إدارة محتوى الموقع (بدون كود)</h2>
-    <div style="text-align: right; padding: 10px;">
-        <label>اسم ملف الفيديو (مثلاً 1V.MP4):</label><br>
-        <input type="text" id="vidUrl" style="width:90%;"><br>
-        <label>إعلان الشريط العلوي:</label><br>
-        <input type="text" id="siteAlert" style="width:90%;" placeholder="مثلاً: خصم 50% للمشتركين الجدد">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>صوفيگرام | التحكم الملكي 👑</title>
+    <style>
+        :root { --gold: #ffd700; --green: #2ecc71; --red: #e74c3c; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .master-card { background: #121212; border: 2px solid var(--gold); border-radius: 30px; padding: 25px; max-width: 600px; margin: 20px auto; box-shadow: 0 0 20px rgba(255,215,0,0.1); }
+        .section-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; font-size: 22px; }
+        .user-row { background: #000; border: 1px solid #333; padding: 15px; margin: 10px 0; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
+        input { width: 90%; padding: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; margin-bottom: 15px; outline: none; text-align: center; }
+        .btn-save { background: var(--green); color: black; border: none; padding: 15px; border-radius: 15px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; }
+        .btn-act { background: var(--green); color: white; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; }
+        .btn-stop { background: var(--red); color: white; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="master-card" style="border-color: var(--green);">
+        <div class="section-title" style="color: var(--green);">📢 إدارة النشر والفيديوهات (بدون كود)</div>
+        <div style="text-align: right; padding: 0 20px;">
+            <label>اسم ملف الفيديو الجديد (مثلاً 2V.MP4):</label>
+            <input type="text" id="vidUrl" placeholder="اكتب اسم الملف المرفوع في GitHub">
+            
+            <label>شريط إعلان الموقع (أعلى الصفحة):</label>
+            <input type="text" id="siteAlert" placeholder="اكتب إعلان يظهر لكل الزوار">
+        </div>
+        <button onclick="updateSiteContent()" class="btn-save">حفظ ونشر التغييرات فوراً 🚀</button>
     </div>
-    <button onclick="updateSite()" class="btn-act" style="width:90%; margin-bottom:10px;">حفظ ونشر التغييرات 🚀</button>
-</div>
 
-<script type="module">
-    // ... الكود السابق لفايربيس ...
-    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-    const db = getDatabase();
+    <div class="master-card">
+        <div class="section-title">👥 إدارة المشتركين والأنشطة</div>
+        <div id="userList">جاري تحميل البيانات...</div>
+    </div>
 
-    window.updateSite = () => {
-        const v = document.getElementById('vidUrl').value;
-        const a = document.getElementById('siteAlert').value;
-        update(ref(db, 'site_settings'), { mainVideo: v, topAlert: a }).then(() => alert("تم النشر بنجاح! 🌍"));
-    };
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-    // لجلب القيم الحالية عند فتح الصفحة
-    onValue(ref(db, 'site_settings'), s => {
-        if(s.exists()){
-            document.getElementById('vidUrl').value = s.val().mainVideo || "";
-            document.getElementById('siteAlert').value = s.val().topAlert || "";
-        }
-    });
-</script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgacmgprp9HYJCcUwVnd3yiKGpoy5k-Q8",
+            authDomain: "testsofygramtest.firebaseapp.com",
+            databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com",
+            projectId: "testsofygramtest",
+            appId: "1:105770464383:web:1f1ad1ad2d9cc2bf9ebb4a"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 1. وظيفة تحديث محتوى الموقع (الفيديو والإعلان)
+        window.updateSiteContent = () => {
+            const v = document.getElementById('vidUrl').value;
+            const a = document.getElementById('siteAlert').value;
+            if(!v && !a) return alert("يرجى إدخال بيانات للنشر!");
+            
+            update(ref(db, 'site_config'), {
+                currentVideo: v,
+                topAlert: a,
+                lastUpdate: new Date().toLocaleString()
+            }).then(() => alert("تم النشر بنجاح! اذهب لصفحة الـ Index وشاهد التغيير 🌍✨"));
+        };
+
+        // 2. وظيفة جلب إعدادات الموقع الحالية
+        onValue(ref(db, 'site_config'), s => {
+            if(s.exists()){
+                document.getElementById('vidUrl').value = s.val().currentVideo || "";
+                document.getElementById('siteAlert').value = s.val().topAlert || "";
+            }
+        });
+
+        // 3. وظيفة عرض وإدارة المشتركين
+        onValue(ref(db, 'users'), snap => {
+            const list = document.getElementById('userList'); list.innerHTML = "";
+            const data = snap.val();
+            if(!data) { list.innerHTML = "لا يوجد مشتركين حالياً"; return; }
+            
+            for(let id in data) {
+                const u = data[id];
+                list.innerHTML += `
+                <div class="user-row">
+                    <div style="text-align:right;">
+                        <b style="color:var(--gold); font-size:18px;">${u.name}</b><br>
+                        <small style="color:#888;">User: ${id} | Pass: ${u.password}</small>
+                    </div>
+                    <div>
+                        <button class="btn-act" onclick="toggleActive('${id}', true)">تفعيل</button>
+                        <button class="btn-stop" onclick="toggleActive('${id}', false)">إيقاف</button>
+                    </div>
+                    <span style="color:${u.active ? 'var(--green)' : 'var(--red)'}; font-size:12px;">
+                        ${u.active ? 'نشط ✅' : 'متوقف ❌'}
+                    </span>
+                </div>`;
+            }
+        });
+
+        window.toggleActive = (id, state) => {
+            update(ref(db, `users/${id}`), { 
+                active: state, 
+                status: state ? "مفتوح حالياً ✅" : "مغلق مؤقتاً ❌" 
+            });
+        };
+    </script>
+</body>
+</html>
