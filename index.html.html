@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="main-html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram Online | Global Queue System</title>
+    <style>
+        :root { --main-color: #2ecc71; --bg-color: #000; }
+        body { background: var(--bg-color); color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; transition: 0.3s; margin: 0; }
+        .lang-btn { position: absolute; top: 20px; left: 20px; background: #222; border: 1px solid var(--main-color); color: var(--main-color); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        h1 { color: var(--main-color); font-size: 3.5rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        p { color: #888; font-size: 1.2rem; max-width: 700px; line-height: 1.6; }
+        
+        .search-box { background: #111; padding: 30px; border-radius: 25px; border: 1px solid #333; width: 90%; max-width: 450px; margin-top: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 85%; padding: 15px; border-radius: 12px; border: 1px solid var(--main-color); background: #000; color: #fff; text-align: center; font-size: 1.2rem; margin-bottom: 20px; }
+        
+        .btn-view { background: var(--main-color); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 93%; font-size: 1.2rem; transition: 0.3s; }
+        .btn-view:hover { transform: scale(1.05); background: #27ae60; }
+        
+        .links { margin-top: 30px; }
+        .btn-reg { color: #f39c12; text-decoration: none; font-weight: bold; margin: 0 15px; border-bottom: 1px solid transparent; }
+        .btn-reg:hover { border-bottom: 1px solid #f39c12; }
+        
+        .footer { position: absolute; bottom: 20px; color: #444; font-size: 0.8rem; width: 100%; }
+        
+        /* التنسيق للغة الإنجليزية */
+        [lang="en"] { direction: ltr; text-align: center; }
+    </style>
+</head>
+<body id="body-content">
+
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">English</button>
+
+    <div class="hero">
+        <h1 id="title">صوفيگرام أونلاين</h1>
+        <p id="desc">النظام العالمي الأول لإدارة طوابير الانتظار والمناداة الذكية.</p>
+
+        <div class="search-box">
+            <h3 id="search-head">🔍 ابحث عن دورك الآن</h3>
+            <input type="text" id="search-id" placeholder="ادخل المعرف (Clinic ID)">
+            <button class="btn-view" id="view-btn" onclick="goToView()">مشاهدة الانتظار</button>
+        </div>
+
+        <div class="links">
+            <a href="register.html" class="btn-reg" id="reg-link">سجل عملك معنا (اشتراك عالمي)</a>
+        </div>
+        
+        <div class="footer">
+            &copy; 2026 Sofygram Online Global System. All Rights Reserved.
+        </div>
+    </div>
+
+    <script>
+        let currentLang = 'ar';
+
+        const content = {
+            ar: {
+                title: "صوفيگرام أونلاين",
+                desc: "النظام العالمي الأول لإدارة طوابير الانتظار والمناداة الذكية.",
+                searchHead: "🔍 ابحث عن دورك الآن",
+                placeholder: "ادخل المعرف (ID)",
+                viewBtn: "مشاهدة الانتظار",
+                regLink: "سجل عملك معنا (اشتراك عالمي)",
+                btnText: "English"
+            },
+            en: {
+                title: "SOFYGRAM ONLINE",
+                desc: "The premier global system for intelligent queue management and calling.",
+                searchHead: "🔍 Search Your Turn",
+                placeholder: "Enter ID (e.g. alaa_clinic)",
+                viewBtn: "View Live Status",
+                regLink: "Register Your Business (Global Access)",
+                btnText: "العربية"
+            }
+        };
+
+        function toggleLang() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            const html = document.getElementById('main-html');
+            const data = content[currentLang];
+
+            html.setAttribute('lang', currentLang);
+            html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+
+            document.getElementById('title').innerText = data.title;
+            document.getElementById('desc').innerText = data.desc;
+            document.getElementById('search-head').innerText = data.searchHead;
+            document.getElementById('search-id').setAttribute('placeholder', data.placeholder);
+            document.getElementById('view-btn').innerText = data.viewBtn;
+            document.getElementById('reg-link').innerText = data.regLink;
+            document.getElementById('lang-btn').innerText = data.btnText;
+        }
+
+        function goToView() {
+            const id = document.getElementById('search-id').value.trim().toLowerCase();
+            if(id) {
+                window.location.href = "view.html?id=" + id;
+            } else {
+                alert(currentLang === 'ar' ? "يرجى كتابة المعرف!" : "Please enter an ID!");
+            }
+        }
+    </script>
+</body>
+</html>

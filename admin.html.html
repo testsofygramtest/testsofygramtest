@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram Admin | إدارة العيادة ⚡</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root { --glow: #ffd700; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 15px; margin: 0; }
+        .admin-card { background: #121212; padding: 25px; border-radius: 30px; max-width: 450px; margin: auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.1); }
+        
+        /* شاشة الرقم الكبير */
+        .num-display { font-size: 110px; font-weight: bold; color: #fff; margin: 10px 0; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        
+        /* أزرار التحكم */
+        .btn-round { width: 85px; height: 85px; border-radius: 50%; border: none; font-size: 45px; cursor: pointer; color: white; margin: 10px; transition: 0.3s; }
+        .plus { background: #2ecc71; box-shadow: 0 0 15px #2ecc71; }
+        .minus { background: #e74c3c; box-shadow: 0 0 15px #e74c3c; }
+        .btn-round:active { transform: scale(0.9); }
+
+        /* منطقة الأدوات السفلية (الباركود والتصفير) */
+        .tools-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+        
+        /* قسم الباركود */
+        #qr-area { background: white; padding: 10px; border-radius: 12px; display: inline-block; }
+        .qr-container { text-align: right; width: 45%; }
+        .save-qr { background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; margin-top: 8px; cursor: pointer; width: 100%; }
+
+        /* قسم التصفير */
+        .reset-container { text-align: left; width: 45%; }
+        .btn-reset { background: none; color: #e74c3c; border: 1px solid #e74c3c; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-reset:hover { background: #e74c3c; color: white; }
+
+        input, textarea, select { width: 90%; padding: 12px; margin: 8px 0; border-radius: 12px; background: #1e293b; color: white; border: 1px solid #333; text-align: center; }
+        .btn-save { background: var(--glow); color: #000; border: none; padding: 15px; border-radius: 15px; font-weight: bold; width: 95%; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="loginBox" class="admin-card">
+        <img src="logo.png" style="width:140px; margin-bottom:20px;">
+        <h2 style="color:var(--glow);">دخول السكرتارية 🔐</h2>
+        <input type="text" id="u" placeholder="اسم المستخدم">
+        <input type="password" id="p" placeholder="كلمة المرور">
+        <button onclick="login()" class="btn-save">دخول</button>
+    </div>
+
+    <div id="controlBox" class="admin-card" style="display:none;">
+        <h2 id="cName" style="color:var(--glow); margin:0;"></h2>
+        <div class="num-display" id="n">0</div>
+        
+        <div style="display:flex; justify-content:center;">
+            <button class="btn-round minus" onclick="ch(-1)">-</button>
+            <button class="btn-round plus" onclick="ch(1)">+</button>
+        </div>
+
+        <select id="st">
+            <option value="🟢 مفتوح الآن | Open">🟢 مفتوح الآن</option>
+            <option value="🟡 قريباً | Soon">🟡 قريباً</option>
+            <option value="🔴 مغلق | Closed">🔴 مغلق</option>
+        </select>
+        <textarea id="nt" placeholder="اكتب ملاحظة للمراجعين..."></textarea>
+        <button onclick="upDetails()" class="btn-save">تحديث البيانات 🚀</button>
+
+        <div class="tools-grid">
+            <div class="reset-container">
+                <button onclick="resetNum()" class="btn-reset">🔄 تصفير العداد<br>نهاية الدوام</button>
+            </div>
+
+            <div class="qr-container">
+                <div id="qr-area"></div>
+                <button class="save-qr" onclick="downloadQR()">💾 حفظ الباركود</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, get, child, update, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        // مفاتيح مختبر صوفيگرام الجديدة
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgacmgprp9HYJCcUwVnd3yiKGpoy5k-Q8",
+            authDomain: "testsofygramtest.firebaseapp.com",
+            databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com",
+            projectId: "testsofygramtest",
+            storageBucket: "testsofygramtest.firebasestorage.app",
+            messagingSenderId: "105770464383",
+            appId: "1:105770464383:web:1f1ad1ad2d9cc2bf9ebb4a"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let curUser = ""; let curNum = 0;
+
+        window.login = () => {
+            const user = document.getElementById('u').value.trim();
+            const pass = document.getElementById('p').value.trim();
+            get(child(ref(db), `users/${user}`)).then((s) => {
+                if(s.exists() && s.val().password == pass) {
+                    if(!s.val().active) return alert("الحساب بانتظار التفعيل!");
+                    curUser = user;
+                    document.getElementById('loginBox').style.display = 'none';
+                    document.getElementById('controlBox').style.display = 'block';
+                    
+                    // توليد الباركود فوراً
+                    new QRCode(document.getElementById("qr-area"), {
+                        text: `https://sofygram.com/view.html?id=${curUser}`,
+                        width: 90, height: 90
+                    });
+
+                    onValue(ref(db, `users/${curUser}`), (snap) => {
+                        const d = snap.val(); curNum = d.currentNum || 0;
+                        document.getElementById('n').innerText = curNum;
+                        document.getElementById('cName').innerText = d.name;
+                        document.getElementById('nt').value = d.note || "";
+                        document.getElementById('st').value = d.status || "🟢 مفتوح الآن | Open";
+                    });
+                } else alert("بيانات خاطئة!");
+            });
+        };
+
+        window.ch = (v) => { 
+            curNum += v; if(curNum < 0) curNum = 0;
+            update(ref(db, `users/${curUser}`), { currentNum: curNum });
+        };
+
+        window.upDetails = () => {
+            update(ref(db, `users/${curUser}`), { status: document.getElementById('st').value, note: document.getElementById('nt').value })
+            .then(() => alert("تم التحديث ✅"));
+        };
+
+        window.resetNum = () => {
+            if(confirm("⚠️ هل أنت متأكد من تصفير العداد لبدء دوام جديد؟")) {
+                update(ref(db, `users/${curUser}`), { currentNum: 0 });
+            }
+        };
+
+        // وظيفة حفظ الباركود كصورة
+        window.downloadQR = () => {
+            html2canvas(document.querySelector("#qr-area")).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `Sofygram-QR-${curUser}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        };
+    </script>
+</body>
+</html>
