@@ -1,29 +1,30 @@
+<div class="master-card" style="margin-top:30px; border-color: #2ecc71;">
+    <h2 style="color:#2ecc71;">📢 إدارة محتوى الموقع (بدون كود)</h2>
+    <div style="text-align: right; padding: 10px;">
+        <label>اسم ملف الفيديو (مثلاً 1V.MP4):</label><br>
+        <input type="text" id="vidUrl" style="width:90%;"><br>
+        <label>إعلان الشريط العلوي:</label><br>
+        <input type="text" id="siteAlert" style="width:90%;" placeholder="مثلاً: خصم 50% للمشتركين الجدد">
+    </div>
+    <button onclick="updateSite()" class="btn-act" style="width:90%; margin-bottom:10px;">حفظ ونشر التغييرات 🚀</button>
+</div>
+
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-    const db = getDatabase(initializeApp({ databaseURL: "https://testsofygramtest-default-rtdb.firebaseio.com" }));
+    // ... الكود السابق لفايربيس ...
+    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+    const db = getDatabase();
 
-    // ... كود الدخول (checkMaster) يبقى كما هو ...
+    window.updateSite = () => {
+        const v = document.getElementById('vidUrl').value;
+        const a = document.getElementById('siteAlert').value;
+        update(ref(db, 'site_settings'), { mainVideo: v, topAlert: a }).then(() => alert("تم النشر بنجاح! 🌍"));
+    };
 
-    function loadUsers() {
-        onValue(ref(db, 'users'), snap => {
-            const list = document.getElementById('list'); list.innerHTML = "";
-            const data = snap.val();
-            for(let id in data) {
-                const u = data[id];
-                list.innerHTML += `<div class="user-row" style="background:#000; border:1px solid #333; padding:15px; margin:10px; border-radius:20px; display:flex; justify-content:space-between; align-items:center;">
-                    <div style="text-align:right;">
-                        <b style="color:#ffd700;">${u.name}</b><br>
-                        <small style="color:#888;">User: ${id}</small><br>
-                        <small style="color:#2ecc71;">Pass: ${u.password}</small> </div>
-                    <div>
-                        <button class="btn-act" onclick="act('${id}', true)" style="background:#2ecc71; border:none; padding:10px; color:#fff; border-radius:10px; cursor:pointer;">تفعيل</button>
-                        <button class="btn-stop" onclick="act('${id}', false)" style="background:#e74c3c; border:none; padding:10px; color:#fff; border-radius:10px; cursor:pointer; margin-right:5px;">إيقاف</button>
-                    </div>
-                    <span style="color:${u.active ? '#2ecc71' : '#e74c3c'}">${u.active ? 'نشط' : 'متوقف'}</span>
-                </div>`;
-            }
-        });
-    }
-    window.act = (id, s) => update(ref(db, `users/${id}`), { active: s, status: s ? "مفتوح ✅" : "مغلق ❌" });
+    // لجلب القيم الحالية عند فتح الصفحة
+    onValue(ref(db, 'site_settings'), s => {
+        if(s.exists()){
+            document.getElementById('vidUrl').value = s.val().mainVideo || "";
+            document.getElementById('siteAlert').value = s.val().topAlert || "";
+        }
+    });
 </script>
